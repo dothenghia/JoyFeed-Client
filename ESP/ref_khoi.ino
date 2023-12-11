@@ -53,7 +53,7 @@ const int in1 = 0;
 const int in2 = 2;
 
 // buzzer pin
-const int buzzer = 15;
+const int buzzer = 5;
 
 // ESP8266 Access Point
 AsyncWebServer server(80);
