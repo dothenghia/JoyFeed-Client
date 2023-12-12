@@ -1,4 +1,19 @@
 
+.sidebar {
+    transform: translateX(-100%);
+    /* transition: all 0.4s ease-in-out; */
+    height: calc(100vh - 3rem);
+    margin-top: 3rem;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+}
+.sidebar.showSidebar {
+    transform: translateX(0%);
+}
+
 .navbar-list {
     border-top: 1px solid var(--border-color);
     margin-top: 1rem;

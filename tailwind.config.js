@@ -18,6 +18,8 @@ export default {
                 'title': '#212529',
                 'subtitle': '#878787',
                 'text': '#444444',
+
+                'bgf9': '#F9F9F9',
             },
         },
     },
