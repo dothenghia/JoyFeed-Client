@@ -1,6 +1,8 @@
 
 
 const Header = ({ open, setOpen }) => {
+    // console.log('[Header] render')
+
     return (
         <div className="h-12 px-3 bg-primary flex justify-start items-center">
 
