@@ -2,6 +2,7 @@
 import { Outlet } from "react-router-dom"
 
 import Header from "../components/Header/Header"
+import Sidebar from "../components/Sidebar/Sidebar"
 
 const Layout = () => {
 
@@ -11,7 +12,11 @@ const Layout = () => {
             <Header />
 
             {/* ------ Child route rendering ------ */}
-            <Outlet />
+            <div className=" h-[calc(100vh-3rem)] flex">
+                <Sidebar />
+                
+                <Outlet />
+            </div>
         </>
     )
 }
