@@ -19,7 +19,7 @@ const Register = () => {
 
 
                 <div className="w-full md:w-1/2 py-6 md:py-0 px-6 md:px-8 lg:px-16 flex flex-col items-center">
-                    <h2 className="block text-2xl md:text-2xl font-semibold mb-5 text-primary">Đăng ký tài khoản</h2>
+                    <h2 className="block text-2xl font-semibold mb-5 text-primary">Đăng ký tài khoản</h2>
 
                     <form className="w-full">
                         <label htmlFor="email" className="form-label">Email</label>

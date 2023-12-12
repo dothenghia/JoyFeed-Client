@@ -40,7 +40,7 @@ const Login = () => {
                         />
 
                         <div className="flex justify-end mb-4">
-                            <Link to="#" className="text-sm font-medium text-primary">
+                            <Link to="/recovery" className="text-sm font-medium text-primary">
                                 Quên mật khẩu?
                             </Link>
                         </div>
