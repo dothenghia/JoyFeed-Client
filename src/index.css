@@ -40,22 +40,35 @@
     /* STYLE CHO CÁC NÚT */
     .custom-primary-btn {
         @apply px-4 py-2 rounded-md text-white bg-primary
-        hover:bg-primary-hover;
+        hover:bg-primary-hover transition-all duration-300 ease-in-out;
     }
     .custom-primary-outline-btn {
         @apply px-4 py-2 rounded-md text-primary border border-primary
-        hover:bg-primary hover:text-white;
+        hover:bg-primary hover:text-white transition-all duration-300 ease-in-out;
+    }
+    .custom-primary-fade-btn {
+        @apply px-4 py-2 rounded-md text-primary bg-primary-light
+        hover:bg-primary hover:text-white transition-all duration-300 ease-in-out;
     }
 
-    /* Component cho trang Login, Register, Recovery */
+    /* Component cho Form */
     .form-input {
         @apply block w-full px-3 py-2 rounded-md outline outline-1 outline-border text-base text-text mb-4;
     }
     .form-input:focus {
         @apply outline-primary outline-2;
     }
+    .form-input-inline {
+        @apply px-3 py-2 rounded-md outline outline-1 outline-border text-base text-text mb-4;
+    }
+    .form-input-inline:focus {
+        @apply outline-primary outline-2;
+    }
     .form-label {
         @apply block text-base font-semibold text-text mb-1;
+    }
+    .form-label-inline {
+        @apply text-base font-semibold text-text mb-1;
     }
     .divider {
         @apply w-full h-px bg-border my-4;

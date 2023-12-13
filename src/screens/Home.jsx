@@ -34,10 +34,7 @@ const Home = () => {
                     <button type="submit" className="custom-primary-btn w-full">Cho ăn ngay lập tức</button>
                 </form>
 
-
-
             </div>
-
         </div>
     )
 }
