@@ -29,7 +29,7 @@ const Home = () => {
                         name="ration"
                         required
                         className="form-input"
-                    ></input>
+                    />
 
                     <button type="submit" className="custom-primary-btn w-full">Cho ăn ngay lập tức</button>
                 </form>

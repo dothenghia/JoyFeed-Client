@@ -3,11 +3,9 @@ import { Link } from "react-router-dom"
 
 const Recovery = () => {
     return (
-        <div id="login" className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary
-                                   flex justify-center items-center">
+        <div id="login" className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary flex justify-center items-center">
 
-            <div className="w-fit md:min-w-[500px] h-fit mx-6 flex flex-col justify-between items-center
-                          bg-white rounded-2xl overflow-hidden shadow-lg py-6 px-6">
+            <div className="w-fit md:min-w-[500px] h-fit mx-6 flex flex-col justify-between items-center bg-white rounded-2xl overflow-hidden shadow-lg py-6 px-6">
 
                 <h1 className="block text-2xl font-semibold mb-0 text-primary">Quên mật khẩu</h1>
 
@@ -40,7 +38,6 @@ const Recovery = () => {
                         Đăng nhập
                     </Link>
                 </div>
-
 
             </div>
         </div>

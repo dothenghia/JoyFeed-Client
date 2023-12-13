@@ -6,8 +6,7 @@ import Header from "../components/Header/Header"
 import Sidebar from "../components/Sidebar/Sidebar"
 
 const Layout = () => {
-    // console.log('[Layout] render')
-    
+    // ========== Init state ==========
     const [sidebarOpen, setSidebarOpen] = useState(true)
 
     return (
