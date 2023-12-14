@@ -18,9 +18,14 @@ const Register = () => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
+
+            if (user) {
+                navigate('/home'); // Nếu đã đăng nhập trước đó, chuyển hướng về trang home
+            }
         });
+
         return () => unsubscribe();
-    }, [auth]);
+    }, [auth, navigate]);
 
 
     const handleSignUp = async (event) => {
