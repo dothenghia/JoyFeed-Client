@@ -1,7 +1,45 @@
 
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { auth } from "../functions/firebase"
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 
 const Login = () => {
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                navigate("/home");
+            }
+        });
+
+        return () => unsubscribe();
+    }, [navigate]);
+
+    const handleLogin = async (event) => {
+        event.preventDefault();
+
+        if (password.length < 6) {
+            setError("Mật khẩu phải có ít nhất 6 ký tự.");
+            return;
+        }
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+            navigate("/home");
+        } catch (error) {
+            setError("Email hoặc mật khẩu không đúng.");
+            console.error("Lỗi đăng nhập:", error.message);
+        }
+    };
+
+
     return (
         <div id="login" className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary flex justify-center items-center">
 
@@ -15,7 +53,7 @@ const Login = () => {
                         className="md:hidden w-72 max-w-[80%] ratio-1x1 object-cover"
                     />
 
-                    <form className="w-full">
+                    <form className="w-full" onSubmit={handleLogin}>
                         <label htmlFor="email" className="form-label">Email</label>
                         <input
                             type="email"
@@ -24,6 +62,8 @@ const Login = () => {
                             placeholder="Nhập địa chỉ email"
                             required
                             className="form-input"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
 
                         <label htmlFor="password" className="form-label">Mật khẩu</label>
@@ -34,7 +74,11 @@ const Login = () => {
                             placeholder="Nhập mật khẩu"
                             required
                             className="form-input"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
+
+                        {error && <p className="text-red-500">{error}</p>}
 
                         <div className="flex justify-end mb-4">
                             <Link to="/recovery" className="text-sm font-medium text-primary">
