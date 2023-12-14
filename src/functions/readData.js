@@ -1,6 +1,6 @@
 
 import { ref, onValue } from "firebase/database";
-import db from "../../firebase";
+import db from "./firebase";
 
 export default async function readData() {
     try {

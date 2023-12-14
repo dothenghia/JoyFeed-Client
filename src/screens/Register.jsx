@@ -1,7 +1,59 @@
 
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { auth } from "../functions/firebase"
+import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth"
 
 const Register = () => {
+    const navigate = useNavigate()
+
+    const [email, setEmail] = useState('');
+    const [espId, setEspId] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [user, setUser] = useState(null);
+    const [passwordError, setPasswordError] = useState("");
+    const [confirmPasswordError, setConfirmPasswordError] = useState("");
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            setUser(user);
+        });
+        return () => unsubscribe();
+    }, [auth]);
+
+
+    const handleSignUp = async (event) => {
+        event.preventDefault();
+
+        setPasswordError("");
+        setConfirmPasswordError("");
+
+        if (password.length < 6) {
+            setPasswordError("Mật khẩu phải có ít nhất 6 ký tự.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setConfirmPasswordError("Xác nhận mật khẩu không khớp.");
+            return;
+        }
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+
+            await updateProfile(user, {
+                displayName: espId,
+            });
+
+            setUser(user);
+            navigate('/home');
+        } catch (error) {
+            console.error('Lỗi trong quá trình đăng ký:', error.message);
+        }
+    };
+
     return (
         <div id="login" className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary flex justify-center items-center">
 
@@ -27,6 +79,8 @@ const Register = () => {
                             placeholder="Nhập địa chỉ email"
                             required
                             className="form-input"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
 
                         <label htmlFor="esp" className="form-label">Mã máy ESP</label>
@@ -37,6 +91,8 @@ const Register = () => {
                             placeholder="Nhập mã máy"
                             required
                             className="form-input"
+                            value={espId}
+                            onChange={(e) => setEspId(e.target.value)}
                         />
 
                         <label htmlFor="password" className="form-label">Mật khẩu</label>
@@ -47,7 +103,10 @@ const Register = () => {
                             placeholder="Nhập mật khẩu"
                             required
                             className="form-input"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
+                        {passwordError && <p className="text-red-500">{passwordError}</p>}
 
                         <label htmlFor="confirmPassword" className="form-label">Xác nhận mật khẩu</label>
                         <input
@@ -57,9 +116,12 @@ const Register = () => {
                             placeholder="Nhập lại mật khẩu"
                             required
                             className="form-input"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
+                        {confirmPasswordError && <p className="text-red-500">{confirmPasswordError}</p>}
 
-                        <button type="submit" className="custom-primary-btn w-full mt-4">
+                        <button onClick={handleSignUp} className="custom-primary-btn w-full mt-4">
                             Đăng ký
                         </button>
                     </form>
