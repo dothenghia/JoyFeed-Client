@@ -22,13 +22,21 @@ const Sidebar = ({ open }) => {
         }
     };
 
+    const user = auth.currentUser;
+
     return (
         <div className={`${open ? 'sidebar showSidebar' : 'sidebar'} flex w-[14rem] bg-white flex-col justify-between py-4 px-3 transition-all duration-700 ease-in-out`}
             style={{ 'boxShadow': '0 0 10px rgba(0, 0, 0, 0.25)' }}>
 
             <div>
-                <h1 className="text-lg font-semibold text-title">Tên người dùng</h1>
-                <h2 className="text-lg font-semibold text-text">ID: 666123</h2>
+                {user ? (
+                    <>
+                        <h1 className="text-lg font-semibold text-title text-ellipsis overflow-hidden">{user.email}</h1>
+                        <h2 className="text-lg font-semibold text-text text-ellipsis overflow-hidden">ID: {user.displayName}</h2>
+                    </>
+                ) : (
+                    <p>Đang tải...</p>
+                )}
 
                 <div className="navbar-list">
                     <Link to='/home' className={`navbar-item ${location.pathname === '/home' ? 'active' : ''}`}>

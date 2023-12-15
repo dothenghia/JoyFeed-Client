@@ -31,14 +31,8 @@ export default function App() {
 
         <BrowserRouter>
             <Routes>
-                <Route
-                    path="/login"
-                    element={<Login user={user} />} // Truyền prop user vào Login
-                />
-                <Route
-                    path="/register"
-                    element={<Register user={user} />} // Truyền prop user vào Register
-                />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/recovery" element={<Recovery />} />
 
                 {user ? (
@@ -49,6 +43,8 @@ export default function App() {
                         <Route path="*" index element={<Home />} />
                     </Route>
                 ) : null}
+                
+                <Route path="*" element={<Login />} />
             </Routes>
         </BrowserRouter>
 

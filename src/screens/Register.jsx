@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { auth } from "../functions/firebase"
+import { ref, onValue, set } from "firebase/database";
+import { auth, db } from "../functions/firebase"
 import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth"
 
 const Register = () => {
@@ -45,12 +46,35 @@ const Register = () => {
         }
 
         try {
+            // Đăng ký tài khoản
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // Cập nhật thông tin người dùng
             await updateProfile(user, {
+                email: email,
                 displayName: espId,
             });
+
+            const newRealtimeUser = {
+                uid: user.uid,
+                email: email,
+                esp_id: espId,
+                feed_gram: [],
+                feed_time: [],
+                n_feed: 0,
+                remaining_food: 0,
+                request: "Default",
+                weight: 0,
+            }
+
+            set(ref(db, `${espId}`), newRealtimeUser)
+                .then(() => {
+                    console.log("Tạo tài khoản thành công!");
+                })
+                .catch((error) => {
+                    console.error("Lỗi khi lưu trữ dữ liệu:", error);
+                });
 
             setUser(user);
             navigate('/home');
