@@ -80,7 +80,11 @@ const Home = () => {
                         onChange={(e) => setWeightData(e.target.value)}
                     />
 
-                    <button onClick={updateValues} className="custom-primary-btn w-full">Cho ăn ngay lập tức</button>
+                    <button
+                        onClick={updateValues}
+                        className={`custom-primary-btn w-full ${requestData === 'Feed' ? 'opacity-50 bg-slate-500 hover:bg-slate-500' : ''}`}
+                        disabled={requestData === 'Feed'}
+                    >Cho ăn ngay lập tức</button>
                 </form>
 
             </div>
