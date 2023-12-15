@@ -16,7 +16,7 @@ const Gaude = ({ foodData }) => {
     return (
         <PieChart
             data={[
-                { title: 'One', value: foodData, color: getColor() },
+                { title: 'One', value: foodData.toFixed(1), color: getColor() },
             ]}
             background='#DEE2E6'
             totalValue={100}

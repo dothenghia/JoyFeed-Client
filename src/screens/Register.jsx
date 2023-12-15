@@ -60,12 +60,13 @@ const Register = () => {
                 uid: user.uid,
                 email: email,
                 esp_id: espId,
-                feed_gram: [],
-                feed_time: [],
-                n_feed: 0,
-                remaining_food: 0,
-                request: "Default",
-                weight: 0,
+                feed_gram: [], // Hẹn lượng thức ăn
+                feed_time: [], // Hẹn giờ cho ăn
+                n_feed: 0, // Số bữa ăn
+                remaining_food: 0, // Lượng Thức ăn còn lại
+                request: "Default", // "Default" | "Feed"
+                weight: 0, // Khẩu phần cho ăn lập tức
+                sound: 0 // Âm thanh cho ăn lập tức
             }
 
             set(ref(db, `${espId}`), newRealtimeUser)
