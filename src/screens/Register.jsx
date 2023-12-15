@@ -1,13 +1,13 @@
 
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { ref, onValue, set } from "firebase/database";
+import { ref, set } from "firebase/database";
 import { auth, db } from "../functions/firebase"
 import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth"
 
 const Register = () => {
+    // ========== Init state ==========
     const navigate = useNavigate()
-
     const [email, setEmail] = useState('');
     const [espId, setEspId] = useState('');
     const [password, setPassword] = useState('');
@@ -16,12 +16,12 @@ const Register = () => {
     const [passwordError, setPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
+    // ========== Run when component mounted ==========
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
-
             if (user) {
-                navigate('/home'); // Nếu đã đăng nhập trước đó, chuyển hướng về trang home
+                navigate('/home'); // Redirect to home page if user logged in
             }
         });
 
@@ -29,6 +29,7 @@ const Register = () => {
     }, [auth, navigate]);
 
 
+    // ========== Handle functions ==========
     const handleSignUp = async (event) => {
         event.preventDefault();
 
@@ -46,16 +47,17 @@ const Register = () => {
         }
 
         try {
-            // Đăng ký tài khoản
+            // Create user
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Cập nhật thông tin người dùng
+            // Update user profile
             await updateProfile(user, {
                 email: email,
                 displayName: espId,
             });
 
+            // Create realtime database for user
             const newRealtimeUser = {
                 uid: user.uid,
                 email: email,
@@ -64,12 +66,13 @@ const Register = () => {
                 feed_time: [], // Hẹn giờ cho ăn
                 n_feed: 0, // Số bữa ăn
                 remaining_food: 0, // Lượng Thức ăn còn lại
-                request: "Default", // "Default" | "Feed"
+                request: "Default", // "Default" -> Bình thường | "Feed" -> Cho ăn ngay lập tức
                 weight: 0, // Khẩu phần cho ăn lập tức
                 sound: 0 // Âm thanh cho ăn lập tức
             }
 
-            set(ref(db, `${espId}`), newRealtimeUser)
+            // Update realtime database
+            set(ref(db, `${espId}`), newRealtimeUser) // Lấy ESP_ID làm key
                 .then(() => {
                     console.log("Tạo tài khoản thành công!");
                 })
@@ -78,7 +81,7 @@ const Register = () => {
                 });
 
             setUser(user);
-            navigate('/home');
+            navigate('/home'); // Redirect to home page
         } catch (error) {
             console.error('Lỗi trong quá trình đăng ký:', error.message);
         }
@@ -95,7 +98,6 @@ const Register = () => {
                         className="w-3/4 ratio-1x1 object-cover"
                     />
                 </div>
-
 
                 <div className="w-full md:w-1/2 py-6 md:py-0 px-6 md:px-8 lg:px-16 flex flex-col items-center">
                     <h2 className="block text-2xl font-semibold mb-5 text-primary">Đăng ký tài khoản</h2>

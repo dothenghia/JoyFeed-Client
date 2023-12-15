@@ -1,9 +1,11 @@
 
+// Import modules
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { auth } from './functions/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
+// Import screens
 import Login from './screens/Login'
 import Register from './screens/Register'
 import Recovery from './screens/Recovery';
@@ -15,9 +17,10 @@ import History from './screens/History'
 
 
 export default function App() {
-
+    // ========== Init state ==========
     const [user, setUser] = useState(null);
 
+    // ========== Run once when component mounted ==========
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (authUser) => {
             setUser(authUser);
@@ -28,7 +31,6 @@ export default function App() {
 
 
     return (
-
         <BrowserRouter>
             <Routes>
                 <Route path="/login" element={<Login />} />
@@ -47,7 +49,5 @@ export default function App() {
                 <Route path="*" element={<Login />} />
             </Routes>
         </BrowserRouter>
-
-
     )
 }

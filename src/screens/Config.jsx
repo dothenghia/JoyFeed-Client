@@ -10,9 +10,6 @@ const Config = () => {
     const [feed_gramData, setFeed_gramData] = useState([])
     const [feed_timeData, setFeed_timeData] = useState([])
 
-    // console.log(feed_gramData)
-    // console.log(feed_timeData)
-
     // ========== Handle functions ==========
     function handleDecreaseMeal() {
         if (n_feedData === 0) return
@@ -23,13 +20,22 @@ const Config = () => {
     function handleIncreaseMeal() {
         if (n_feedData === 5) return
         setN_feedData(n_feedData + 1)
-        // setFeed_gramData(prevData => prevData.slice(0, n_feedData - 1));
-        // setFeed_timeData(prevData => prevData.slice(0, n_feedData - 1));
     }
     function handleSoundChange(e) {
         setSoundData(e.target.value)
     }
+    function handleUpdate() {
+        const user = auth.currentUser;
+        const espId = user.displayName;
 
+        set(ref(db, `${espId}/feed_gram`), feed_gramData);
+        set(ref(db, `${espId}/feed_time`), feed_timeData);
+        set(ref(db, `${espId}/n_feed`), n_feedData);
+
+        console.log("Đã lưu thông tin thành công!");
+    }
+
+    // ========== Run when component mounted ==========
     useEffect(() => {
         const user = auth.currentUser;
         const espId = user.displayName;
@@ -45,10 +51,8 @@ const Config = () => {
         const sound = ref(db, `${espId}/sound`);
         onValue(sound, (snapshot) => { setSoundData(snapshot.val()) });
 
-
-
         let feed_gram = ref(db, `${espId}/feed_gram`);
-        let feed_time = ref(db, `${espId}/feed_time`); // Gán giá trị ở đây
+        let feed_time = ref(db, `${espId}/feed_time`);
 
         onValue(feed_gram, (snapshot) => {
             const data = snapshot.val() || [];
@@ -63,7 +67,6 @@ const Config = () => {
         return () => {
             off(n_feed);
             off(sound);
-
             off(feed_gram);
             off(feed_time);
         };
@@ -133,22 +136,7 @@ const Config = () => {
             </div>
 
             <div className="flex justify-end pb-8">
-                <button onClick={() => {
-                    // Lưu dữ liệu khi người dùng nhấn nút Lưu thông tin
-                    const user = auth.currentUser;
-                    const espId = user.displayName;
-
-                    // console.log(feed_gramData)
-                    // console.log(feed_timeData)
-                    // Cập nhật dữ liệu vào Firebase Realtime Database
-                    set(ref(db, `${espId}/feed_gram`), feed_gramData);
-                    set(ref(db, `${espId}/feed_time`), feed_timeData);
-                    set(ref(db, `${espId}/n_feed`), n_feedData);
-
-
-                    // Hiển thị thông báo lưu thành công hoặc xử lý lỗi nếu cần
-                    console.log("Đã lưu thông tin thành công!");
-                }} className="custom-primary-btn">Lưu thông tin</button>
+                <button onClick={handleUpdate} className="custom-primary-btn">Lưu thông tin</button>
             </div>
         </div>
     )

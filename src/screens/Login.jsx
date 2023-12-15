@@ -5,35 +5,35 @@ import { auth } from "../functions/firebase"
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 
 const Login = () => {
+    // ========== Init state ==========
     const navigate = useNavigate();
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
+    // ========== Run when component mounted ==========
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                navigate("/home");
+                navigate("/home"); // Redirect to home page if user logged in
             }
         });
 
         return () => unsubscribe();
     }, [navigate]);
 
+    // ========== Handle functions ==========
     const handleLogin = async (event) => {
         event.preventDefault();
-
         if (password.length < 6) {
             setError("Mật khẩu phải có ít nhất 6 ký tự.");
             return;
         }
-
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
-            navigate("/home");
-        } catch (error) {
+            navigate("/home"); // Redirect to home page if login success
+        } 
+        catch (error) {
             setError("Email hoặc mật khẩu không đúng.");
             console.error("Lỗi đăng nhập:", error.message);
         }

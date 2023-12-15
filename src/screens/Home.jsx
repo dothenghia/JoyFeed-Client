@@ -6,12 +6,14 @@ import { ref, onValue, set, off } from 'firebase/database';
 import Gaude from "../components/Gaude/Gaude"
 
 const Home = () => {
+    // ========== Init state ==========
     const [foodData, setFoodData] = useState(0)
     const [weightData, setWeightData] = useState(0)
     const [soundData, setSoundData] = useState(0)
     const [requestData, setRequestData] = useState("")
 
-    useEffect(() => {
+    // ========== Run when component mounted ==========
+    useEffect(() => { // Lấy dữ liệu từ database
         const user = auth.currentUser;
         const espId = user.displayName; // Lấy mã ESP
 
@@ -35,6 +37,7 @@ const Home = () => {
         };
     }, []);
 
+    // ========== Handle functions ==========
     const updateValues = () => {
         const user = auth.currentUser;
         const espId = user.displayName; // Lấy mã ESP

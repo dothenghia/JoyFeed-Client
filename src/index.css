@@ -1,5 +1,4 @@
 
-/* ========== SETUP FONT , CÁC MÀU CỐ ĐỊNH VÀ CÁC CSS MẶC ĐỊNH ========== */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
 
 @tailwind base;
@@ -29,7 +28,7 @@
 }
 
 @layer components {
-    /* STYLE CHO SCREEN */
+    /* ========== STYLE CHO SCREEN ========== */
     .screen-container {
 
     }
@@ -37,7 +36,7 @@
         @apply h-fit min-h-screen;
     }
 
-    /* STYLE CHO CÁC NÚT */
+    /* ========== STYLE CHO CÁC NÚT ========== */
     .custom-primary-btn {
         @apply px-4 py-2 rounded-md text-white bg-primary
         hover:bg-primary-hover transition-all duration-300 ease-in-out;
@@ -51,7 +50,7 @@
         hover:bg-primary hover:text-white transition-all duration-300 ease-in-out;
     }
 
-    /* Component cho Form */
+    /* ========== Component cho Form ========== */
     .form-input {
         @apply block w-full px-3 py-2 rounded-md outline outline-1 outline-border text-base text-text mb-4;
     }
