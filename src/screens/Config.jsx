@@ -86,7 +86,8 @@ const Config = () => {
                             id="n_feedData"
                             className="form-input m-0 w-14 text-center mx-2"
                             value={n_feedData}
-                            onChange={e => setN_feedData(e.target.value)}
+                            // onChange={e => setN_feedData(e.target.value)}
+                            disabled
                         />
                         <button className="custom-primary-fade-btn px-2" onClick={handleIncreaseMeal}><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
                     </div>
@@ -102,42 +103,55 @@ const Config = () => {
                 </div>
             </div>
 
-            <div>
-                {
-                    [...Array(n_feedData)].map((_, index) => (
-                        <div key={index} className="px-4 pt-3 pb-2 border border-1 border-border rounded-xl overflow-hidden mb-5">
-                            <h1 className="text-lg font-semibold mb-2">Lần {index + 1}</h1>
-
+            {
+                n_feedData === 0 ?
+                    (<div className="text-center text-xl font-semibold text-title">
+                        Bạn chưa cài đặt số bữa ăn
+                    </div>)
+                    :
+                    (
+                        <>
                             <div>
-                                <label htmlFor={`feed_time_${index}`} className="form-label-inline">Thời gian: </label>
-                                <input
-                                    type="time"
-                                    id={`feed_time_${index}`}
-                                    className="form-input-inline"
-                                    onChange={(e) => setFeed_timeData([...feed_timeData.slice(0, index), e.target.value, ...feed_timeData.slice(index + 1)])}
-                                    value={feed_timeData[index] || ''}
-                                />
+                                {
+                                    [...Array(n_feedData)].map((_, index) => (
+                                        <div key={index} className="px-4 pt-3 pb-2 border border-1 border-border rounded-xl overflow-hidden mb-5">
+                                            <h1 className="text-lg font-semibold mb-2">Lần {index + 1}</h1>
+
+                                            <div>
+                                                <label htmlFor={`feed_time_${index}`} className="form-label-inline">Thời gian: </label>
+                                                <input
+                                                    type="time"
+                                                    id={`feed_time_${index}`}
+                                                    className="form-input-inline"
+                                                    onChange={(e) => setFeed_timeData([...feed_timeData.slice(0, index), e.target.value, ...feed_timeData.slice(index + 1)])}
+                                                    value={feed_timeData[index] || ''}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label htmlFor={`feed_gram_${index}`} className="form-label-inline">Khối lượng: </label>
+                                                <input
+                                                    type="number"
+                                                    id={`feed_gram_${index}`}
+                                                    className="form-input-inline w-28"
+                                                    onChange={(e) => setFeed_gramData([...feed_gramData.slice(0, index), e.target.value, ...feed_gramData.slice(index + 1)])}
+                                                    value={feed_gramData[index] || ''}
+                                                />
+                                                <span className="text-base font-medium text-text ml-2">gram</span>
+                                            </div>
+                                        </div>
+                                    ))
+                                }
                             </div>
 
-                            <div>
-                                <label htmlFor={`feed_gram_${index}`} className="form-label-inline">Khối lượng: </label>
-                                <input
-                                    type="number"
-                                    id={`feed_gram_${index}`}
-                                    className="form-input-inline w-28"
-                                    onChange={(e) => setFeed_gramData([...feed_gramData.slice(0, index), e.target.value, ...feed_gramData.slice(index + 1)])}
-                                    value={feed_gramData[index] || ''}
-                                />
-                                <span className="text-base font-medium text-text ml-2">gram</span>
+                            <div className="flex justify-end pb-8">
+                                <button onClick={handleUpdate} className="custom-primary-btn">Lưu thông tin</button>
                             </div>
-                        </div>
-                    ))
-                }
-            </div>
+                        </>
+                    )
+            }
 
-            <div className="flex justify-end pb-8">
-                <button onClick={handleUpdate} className="custom-primary-btn">Lưu thông tin</button>
-            </div>
+
         </div>
     )
 }
