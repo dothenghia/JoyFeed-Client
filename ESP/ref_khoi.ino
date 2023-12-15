@@ -12,8 +12,8 @@
 
 #define FIREBASE_HOST "https://joyfeed-6f7a8-default-rtdb.asia-southeast1.firebasedatabase.app/"
 #define FIREBASE_AUTH "3INg6iazTAVbOqB9NUC8ke9HY1C4yGAnBJIm5gV9"
-#define WIFI_SSID "HCMUS-I34"
-#define WIFI_PASSWORD "phonghoc@i34"
+#define WIFI_SSID "top 1 si tinh iu em ko loi thoat"
+#define WIFI_PASSWORD "123456789@"
 #define ESP_SSID "joyfeed_wifi"
 #define ESP_PASSWORD "123456789"
 
@@ -27,7 +27,7 @@ NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 // Firebase initialization
 Firebase firebase(FIREBASE_HOST);
-String path = "Device_ID_001/";
+String path = "1234/";
 String ssid = "";
 String password = "";
 
@@ -65,10 +65,11 @@ const int buzzer = 5;
 // time limit for notification
 float time_no_food = -1000*3600*12; //12 hours -> milliseconds
 float time_no_eat = -1000*3600*12;
-float time_after_eat = 5000;  //after 30mins
+float time_after_eat = 1000*30*60;  //after 30mins
 float eat_time = 0;
 float H12 = 1000*3600*12;
-
+float limit_distance = 7;
+bool reset_flag = false;
 
 // ESP8266 Access Point
 AsyncWebServer server(80);
@@ -140,6 +141,24 @@ void runMotor(float time)
   digitalWrite(in2, LOW);
 }
 
+void feed(float gram)
+{
+  float w = getWeight();
+  while(w < gram)
+  {
+    Serial.println("Start motor");
+    digitalWrite(ena, HIGH);
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    w = getWeight();
+    Serial.println(w);
+  }
+  digitalWrite(ena, LOW);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  
+}
+
 void alert()
 {
   tone(buzzer, 263, 1000);
@@ -169,6 +188,16 @@ String getWorldTime()
     time += String(m);  
   return time;
 }
+
+
+int getTime()
+{
+  timeClient.update();
+  Serial.print("Time: ");
+  Serial.println(timeClient.getHours()*3600 + timeClient.getMinutes()*60);
+  return timeClient.getHours()*3600 + timeClient.getMinutes()*60;
+}
+
 
 float getDistance()
 {
@@ -235,7 +264,56 @@ void sendNoEat() {
   delay(500);
 }
 
+int stringToHour(String s)
+{
+  String h = "";
+  for(int i=0;i<s.length();++i)
+  {
+    if(s[i] == ':')
+      break;
+    h += s[i];
+  }
+  if(h.length() == 1)
+    return h[0] -  48;
+  else
+    return int(h[0]-48)*10 + int(h[1]-48);
+}
 
+int stringToMin(String s)
+{
+  String m = "";
+  int i = 0;
+  for(;i<s.length();++i)
+  {
+    if(s[i] == ':')
+    {
+      ++i;
+      break;
+    }
+  }
+  for(;i<s.length();++i)
+  {
+    m+=s[i];
+  }
+  Serial.println(m);
+  if(m.length() == 1)
+    return m[0] -  48;
+  else
+    return int(m[0]-48)*10 + int(m[1]-48);
+}
+
+
+
+
+void reset_time()
+{
+  time_no_food = -1000*3600*12; //12 hours -> milliseconds
+  time_no_eat = -1000*3600*12;
+  time_after_eat = 1000*30*60;  //after 30mins
+  eat_time = 0;
+  H12 = 1000*3600*12;
+  limit_distance = 7;
+}
 
 void setup() {
   // put your setup code here, to run once:
@@ -246,9 +324,9 @@ void setup() {
   connect2wifi();
   // Setup the Loadcell&HX711
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
-  scale.set_scale();
-  scale.tare(); //Reset the scale to 0
-  long zero_factor = scale.read_average(); //Get a baseline reading
+  //scale.set_scale();
+  //scale.tare(); //Reset the scale to 0
+  //long zero_factor = scale.read_average(); //Get a baseline reading
 
   // Setup for motor 
   pinMode(ena, OUTPUT);
@@ -258,63 +336,101 @@ void setup() {
   // Setup for buzzer
   pinMode(buzzer, OUTPUT);
 
-  //Setup for ultrasonic sensor
+  // Setup for ultrasonic sensor
   pinMode(trig_pin, OUTPUT);
   pinMode(echo_pin, INPUT);
+
+  //Chip ID
+  //ESP.getChipId();
 }
 
-float eat_amount = 200;
+float eat_amount = 0;
+String eat_time_ngu = "";
 void loop() {
+  float now = millis();
   Serial.println("Hello");
-  getWorldTime();
+
+  //get data from realtime firebase
   String request = "None";
   request = "{" + firebase.getString(path) + "}";
-  Serial.println(request);
+
   char json[1024];
   request.toCharArray(json, 1024);
-
   DynamicJsonDocument doc(1024);
   deserializeJson(doc, json);
+
+  Serial.println(request);
   Serial.println(String(doc["feed_time"]));
   Serial.println(String(doc["feed_gram"]));
-  int n = doc["n_feed"];
-  for (int i=0;i<n;++i)
+  
+  //Feed immediately
+  if(doc["request"] == "Feed")
   {
-    Serial.println(String(doc["feed_time"][i]));
-    Serial.println(String(doc["feed_gram"][i]));
+    eat_amount = doc["weight"];
+    feed(eat_amount);
+    eat_time = now;
+    time_no_eat = -1000*3600*12;
+
+    //Add to history
+    firebase.setString(path+"request","Default");
 
   }
-  // if (request == "feed")
-  // {
-  //   float time = firebase.getFloat(path + "feed_time");
-  //   runMotor(time);
-  //   float curWeight = getWeight();
-  //   firebase.setFloat(path + "weight", curWeight);
-  //   alert();
-  // }
 
-  // Serial.println(WiFi.softAPIP());
-  // Serial.println(WiFi.localIP());
-
-  // //Detect out of food
-  // float distance = getDistance();
-  // float now = millis();
-  // Serial.println(distance);
-  // if(distance > 7 && now - time_no_food > H12)
-  // {
-  //     sendOutOfFood();
-  //     time_no_food = now;
-  // }
-
-  // //Detect no eat
-  // float w = getWeight();
-  // if(now - eat_time > time_after_eat && now - time_no_eat > 5000 && w > 0.8*eat_amount)
-  // {
-  //   sendNoEat();
-  //   time_no_eat = now;
-  // }
-  // Serial.println(w);
-  delay(1000);
+  //Feed
+  int time = getTime();
+  int n_feed = doc["n_feed"];
+  for (int i=0;i<n_feed;++i)
+  {
+    Serial.println(stringToHour(doc["feed_time"][i]) * 3600 + stringToMin(doc["feed_time"][i]) * 60);
+    if(abs(time - stringToHour(doc["feed_time"][i]) *3600 - stringToMin(doc["feed_time"][i]) * 60) < 60)
+    {
+      eat_amount = doc["feed_gram"][i];
+      feed(eat_amount);
+      eat_time = now;
+      time_no_eat = -1000*3600*12;
+      delay(2*60*1000);
+      //Add to history
+      eat_time = doc["feed_time"][i];
+    }
+  }
   
+  //Set remaining food
+  firebase.setFloat(path+"remaining_food",80);
 
+  //Detect out of food
+  float distance = getDistance();
+  Serial.println(distance);
+  if(distance > limit_distance && now - time_no_food > H12)
+  {
+      sendOutOfFood();
+      time_no_food = now;
+  }
+
+  //Detect no eat
+  float w = getWeight();
+  if(now  - eat_time > time_after_eat)
+  {
+    String save_path = "history/"+path+"2023_12_14";
+    firebase.setString(save_path,"fadhsbfadsbsdabvdasiu");
+  }
+  if(now - eat_time > time_after_eat && now - time_no_eat > H12 && w > 0.8*eat_amount)
+  {
+    sendNoEat();
+    time_no_eat = now;
+  }
+
+  
+  //Reset if millis() overflows
+  if(millis() < 1000 && reset_flag == true)
+  {
+    reset_time();
+    reset_flag = false;
+  }
+  if(millis() > 1000)
+    reset_flag = true;
+
+  String save_path = "history/"+path+"2023_12_14/15:33/eat";
+  firebase.setFloat(save_path,30);
+  firebase.setFloat("history/"+path+"2023_12_14/15:33/feed",30);
+  delay(5000);
 }
