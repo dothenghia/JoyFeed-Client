@@ -349,10 +349,9 @@ void loop() {
   unsigned long now = timeClient.getEpochTime();
   struct tm *ptm = gmtime ((time_t *)&now); 
   
-  //most recent feeding
+  //most recent feeding if exist 
   unsigned long most_recent_time = 2e9;
   float most_recent_gram = 0;
-
   if(eat_time_q.isEmpty() == false)
   {
     most_recent_time = eat_time_q.front();
@@ -437,11 +436,11 @@ void loop() {
     
     //Update database
     struct tm *ptm2 = gmtime ((time_t *)&most_recent_time); 
-    
     String save_path = "history/" + path +  String(ptm->tm_year+1900) + "_" + numberFormat(ptm->tm_mon+1) + "_" + numberFormat(ptm->tm_mday) + "/" + numberFormat(ptm2->tm_hour) + ":" + numberFormat(ptm->tm_min) + "/";
     firebase.setFloat(save_path + "eat", ate);
     firebase.setFloat(save_path + "feed", most_recent_gram);
 
+    //Remove from queue
     eat_time_q.pop();
     eat_gram_q.pop();
   }
