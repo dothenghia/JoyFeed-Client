@@ -350,8 +350,14 @@ void loop() {
   struct tm *ptm = gmtime ((time_t *)&now); 
   
   //most recent feeding
-  unsigned long most_recent_time = eat_time_q.front();
-  float most_recent_gram = eat_gram_q.front();
+  unsigned long most_recent_time = 2e9;
+  float most_recent_gram = 0;
+
+  if(eat_time_q.isEmpty() == false)
+  {
+    most_recent_time = eat_time_q.front();
+    most_recent_gram = eat_gram_q.front();
+  }
 
   //get data from realtime firebase
   String request = "None";
