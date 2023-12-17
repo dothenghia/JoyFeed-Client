@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { ref, set } from "firebase/database";
 import { auth, db } from "../functions/firebase"
-import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth"
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, onAuthStateChanged, updateEmail } from "firebase/auth"
 
 const Register = () => {
     // ========== Init state ==========
@@ -50,6 +50,9 @@ const Register = () => {
             // Create user
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+
+            // Send email verification
+            // await sendEmailVerification(user);
 
             // Update user profile
             await updateProfile(user, {
@@ -117,7 +120,7 @@ const Register = () => {
 
                         <label htmlFor="esp" className="form-label">Mã máy ESP</label>
                         <input
-                            type="text"
+                            type="number"
                             id="esp"
                             name="esp"
                             placeholder="Nhập mã máy"

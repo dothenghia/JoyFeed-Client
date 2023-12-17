@@ -14,6 +14,7 @@ import Layout from './screens/Layout'
 import Home from './screens/Home'
 import Config from './screens/Config'
 import History from './screens/History'
+import Setting from './screens/Setting'
 
 
 export default function App() {
@@ -42,6 +43,7 @@ export default function App() {
                         <Route path="/home" index element={<Home />} />
                         <Route path="/config" element={<Config />} />
                         <Route path="/history" element={<History />} />
+                        <Route path="/setting" element={<Setting />} />
                         <Route path="*" index element={<Home />} />
                     </Route>
                 ) : null}
