@@ -10,6 +10,9 @@
 // Json
 #include <ArduinoJson.h>
 
+//Queue
+#include "Queue.h"
+
 #define FIREBASE_HOST "https://joyfeed-6f7a8-default-rtdb.asia-southeast1.firebasedatabase.app/"
 #define FIREBASE_AUTH "3INg6iazTAVbOqB9NUC8ke9HY1C4yGAnBJIm5gV9"
 #define WIFI_SSID "top 1 si tinh iu em ko loi thoat"
@@ -64,12 +67,16 @@ const int buzzer = 5;
 
 // time limit for notification
 float time_no_food = -1000*3600*12; //12 hours -> milliseconds
-float time_no_eat = -1000*3600*12;
-float time_after_eat = 1000*30*60;  //after 30mins
-float eat_time = 0;
 float H12 = 1000*3600*12;
 float limit_distance = 7;
-bool reset_flag = false;
+
+float eat_amount = 0;
+float eat_amount_d = 0;
+
+
+//queue
+Queue <unsigned long>	eat_time_q;	
+Queue	<float> eat_gram_q;
 
 // ESP8266 Access Point
 AsyncWebServer server(80);
@@ -302,19 +309,6 @@ int stringToMin(String s)
     return int(m[0]-48)*10 + int(m[1]-48);
 }
 
-
-
-
-void reset_time()
-{
-  time_no_food = -1000*3600*12; //12 hours -> milliseconds
-  time_no_eat = -1000*3600*12;
-  time_after_eat = 1000*30*60;  //after 30mins
-  eat_time = 0;
-  H12 = 1000*3600*12;
-  limit_distance = 7;
-}
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -342,13 +336,27 @@ void setup() {
 
   //Chip ID
   //ESP.getChipId();
+  timeClient.begin();
 }
 
-float eat_amount = 0;
-String eat_time_ngu = "";
+String numberFormat(int x)
+{
+  return x > 9 ? String(x) : "0" + String(x);
+}
+
 void loop() {
-  float now = millis();
-  Serial.println("Hello");
+  timeClient.update();
+  unsigned long now = timeClient.getEpochTime();
+  struct tm *ptm = gmtime ((time_t *)&now); 
+  
+  //most recent feeding if exist 
+  unsigned long most_recent_time = 2e9;
+  float most_recent_gram = 0;
+  if(eat_time_q.isEmpty() == false)
+  {
+    most_recent_time = eat_time_q.front();
+    most_recent_gram = eat_gram_q.front();
+  }
 
   //get data from realtime firebase
   String request = "None";
@@ -366,14 +374,16 @@ void loop() {
   //Feed immediately
   if(doc["request"] == "Feed")
   {
-    eat_amount = doc["weight"];
-    feed(eat_amount);
-    eat_time = now;
-    time_no_eat = -1000*3600*12;
+    eat_amount_d = doc["weight"];
+    feed(eat_amount_d);
+
+    //push to queue 
+    eat_time_q.push(now);
+    eat_gram_q.push(eat_amount_d);
 
     //Add to history
     firebase.setString(path+"request","Default");
-
+    
   }
 
   //Feed
@@ -386,17 +396,15 @@ void loop() {
     {
       eat_amount = doc["feed_gram"][i];
       feed(eat_amount);
-      eat_time = now;
-      time_no_eat = -1000*3600*12;
+     
+      //push to queue
+      eat_time_q.push(now);
+      eat_gram_q.push(eat_amount);
+
       delay(2*60*1000);
-      //Add to history
-      eat_time = doc["feed_time"][i];
     }
   }
   
-  //Set remaining food
-  firebase.setFloat(path+"remaining_food",80);
-
   //Detect out of food
   float distance = getDistance();
   Serial.println(distance);
@@ -406,31 +414,36 @@ void loop() {
       time_no_food = now;
   }
 
-  //Detect no eat
-  float w = getWeight();
-  if(now  - eat_time > time_after_eat)
-  {
-    String save_path = "history/"+path+"2023_12_14";
-    firebase.setString(save_path,"fadhsbfadsbsdabvdasiu");
-  }
-  if(now - eat_time > time_after_eat && now - time_no_eat > H12 && w > 0.8*eat_amount)
-  {
-    sendNoEat();
-    time_no_eat = now;
-  }
-
+  //Set remaining food
+  float remain_percent = 100.0;
+  if(distance < 0)
+    remain_percent = 0;
+  else if(distance > 15)
+    remain_percent = 100.0;
+  else 
+    remain_percent = min(distance/limit_distance*100,float(100.0));
+  firebase.setFloat(path+"remaining_food",remain_percent);
   
-  //Reset if millis() overflows
-  if(millis() < 1000 && reset_flag == true)
+  //After eating -> update history
+  if(now - most_recent_time > 30*60)
   {
-    reset_time();
-    reset_flag = false;
-  }
-  if(millis() > 1000)
-    reset_flag = true;
+    float w = getWeight();
+    float ate = (most_recent_gram - w) > 0 ? most_recent_gram - w : most_recent_gram;
 
-  String save_path = "history/"+path+"2023_12_14/15:33/eat";
-  firebase.setFloat(save_path,30);
-  firebase.setFloat("history/"+path+"2023_12_14/15:33/feed",30);
-  delay(5000);
+    //Detect no eat
+    if(w > 0.8 * most_recent_gram)
+      sendNoEat();
+    
+    //Update database
+    struct tm *ptm2 = gmtime ((time_t *)&most_recent_time); 
+    String save_path = "history/" + path +  String(ptm->tm_year+1900) + "_" + numberFormat(ptm->tm_mon+1) + "_" + numberFormat(ptm->tm_mday) + "/" + numberFormat(ptm2->tm_hour) + ":" + numberFormat(ptm->tm_min) + "/";
+    firebase.setFloat(save_path + "eat", ate);
+    firebase.setFloat(save_path + "feed", most_recent_gram);
+
+    //Remove from queue
+    eat_time_q.pop();
+    eat_gram_q.pop();
+  }
+  
+  delay(3000);
 }
