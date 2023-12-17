@@ -9,7 +9,7 @@ const Home = () => {
     // ========== Init state ==========
     const [foodData, setFoodData] = useState(0)
     const [weightData, setWeightData] = useState(0)
-    const [soundData, setSoundData] = useState(0)
+    const [soundData, setSoundData] = useState("0")
     const [requestData, setRequestData] = useState("")
 
     // ========== Run when component mounted ==========
@@ -17,17 +17,23 @@ const Home = () => {
         const user = auth.currentUser;
         const espId = user.displayName; // Lấy mã ESP
 
-        const food = ref(db, `${espId}/remaining_food`);
-        onValue(food, (snapshot) => { setFoodData(snapshot.val()) });
+        let food = ref(db, `${espId}/remaining_food`);
+        onValue(food, (snapshot) => {
+            let data = snapshot.val() || 0;
+            setFoodData(data);
+        });
 
         const weight = ref(db, `${espId}/weight`);
-        onValue(weight, (snapshot) => { setWeightData(snapshot.val()) });
+        onValue(weight, (snapshot) => { setWeightData(snapshot.val() || 0) });
 
         const sound = ref(db, `${espId}/sound`);
-        onValue(sound, (snapshot) => { setSoundData(snapshot.val()) });
+        onValue(sound, (snapshot) => { setSoundData(snapshot.val() || ""); });
 
-        const request = ref(db, `${espId}/request`);
-        onValue(request, (snapshot) => { setRequestData(snapshot.val()) });
+        let request = ref(db, `${espId}/request`);
+        onValue(request, (snapshot) => {
+            let data = snapshot.val() || "";
+            setRequestData(data);
+        });
 
         return () => {
             off(food); // Remove event listeners để tránh memory leaks khi component unmount
@@ -66,10 +72,10 @@ const Home = () => {
 
                 <form className="mt-6 mb-12" onSubmit={updateValues}>
                     <label htmlFor="sound" className="form-label">Âm thanh:</label>
-                    <select id="sound" name="sound" className="form-input" onChange={(e) => setSoundData(e.target.value)}>
+                    <select id="sound" name="sound" className="form-input" onChange={(e) => setSoundData(e.target.value)} value={soundData}>
                         <option value="0">Tiếng gọi hoang dã</option>
                         <option value="1">Sao em lại không nói</option>
-                        <option value="2">Tìm em trong bóng damn</option>
+                        <option value="2">Tìm em trong bóng đêm</option>
                     </select>
 
                     <label htmlFor="weight" className="form-label">Khối lượng:</label>
@@ -86,7 +92,7 @@ const Home = () => {
                     <button
                         onClick={updateValues}
                         className={`custom-primary-btn w-full ${requestData === 'Feed' ? 'opacity-50 bg-slate-500 hover:bg-slate-500' : ''}`}
-                        disabled={requestData === 'Feed'}
+                        disabled={requestData == 'Feed'}
                     >Cho ăn ngay lập tức</button>
                 </form>
 

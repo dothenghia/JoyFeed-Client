@@ -45,8 +45,8 @@ const History = () => {
     return (
         <div className="max-w-3xl mx-auto px-5 sm:px-10 h-full pt-6 flex justify-center items-start">
 
-            <div className="flex flex-col min-[980px]:flex-row justify-center items-start">
-                <div className="min-[980px]:mr-10">
+            <div className="flex flex-col min-[980px]:flex-row justify-center items-center min-[980px]:items-start">
+                <div className=" flex-1 min-[980px]:mr-10">
                     <h1 htmlFor="history" className="text-xl font-semibold text-title text-center mb-3">Chọn ngày để xem lịch sử </h1>
                     <Calendar
                         onChange={setDateData}
@@ -54,14 +54,14 @@ const History = () => {
                     />
                 </div>
 
-                <div className="w-full mt-6 border-t border-border pt-6 min-[980px]:border-0">
+                <div className="w-[350px] flex-1 mt-6 border-t border-border pt-6 min-[980px]:border-0">
                     {
                         historyData && historyData.map((data, index) => {
                             return (
-                                <div key={index} className="w-full min-[980px]:w-[300px] px-4 pt-3 pb-2 border border-1 border-border rounded-xl overflow-hidden mb-5">
+                                <div key={index} className="w-full px-4 pt-3 pb-2 border border-1 border-border rounded-xl overflow-hidden mb-5">
                                     <h1 className="text-lg font-semibold mb-2">
                                         Lần {index + 1}
-                                        {data.boan && <span className="text-red-500 text-sm font-medium ml-2">(Bỏ ăn)</span>}
+                                        {data.boan && <span className="text-red-500 text-base font-semibold ml-2">(Bỏ ăn)</span>}
                                     </h1>
 
                                     <p>Thời gian:
@@ -79,7 +79,7 @@ const History = () => {
                     }
                     {
                         historyData && historyData.length === 0 &&
-                        <div className="w-full text-center text-xl font-semibold text-title">
+                        <div className="w-full mt-0 min-[980px]:mt-28 text-center text-xl font-semibold text-title">
                             Không có dữ liệu
                         </div>
                     }
