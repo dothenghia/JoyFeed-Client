@@ -6,12 +6,14 @@ import { auth } from "../functions/firebase";
 import { sendPasswordResetEmail } from 'firebase/auth';
 
 const Recovery = () => {
+    // ========== Init state ==========
     const [email, setEmail] = useState("");
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [countdown, setCountdown] = useState(120); // Thời gian đếm ngược ban đầu là 120 giây
 
+    // ========== Handle functions ==========
     const handleRecovery = async (e) => {
         e.preventDefault();
 

@@ -3,6 +3,7 @@ import { auth } from "../functions/firebase";
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 
 const Setting = () => {
+    // ========== Init state ==========
     const [emailData, setEmailData] = useState("");
     const [esp_idData, setEsp_idData] = useState("");
 
@@ -14,6 +15,7 @@ const Setting = () => {
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [successMessage, setSuccessMessage] = useState(""); // Thêm state cho thông báo thành công
 
+    // ========== Run when component mounted ==========
     useEffect(() => {
         const user = auth.currentUser;
 
@@ -23,6 +25,7 @@ const Setting = () => {
         }
     }, []);
 
+    // ========== Handle functions ==========
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
 

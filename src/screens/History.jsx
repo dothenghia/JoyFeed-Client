@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { auth, db } from "../functions/firebase";
-import { ref, onValue, set, off } from 'firebase/database';
+import { ref, onValue, off } from 'firebase/database';
 
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -12,15 +12,15 @@ const History = () => {
     const [dateData, setDateData] = useState(new Date());
 
 
+    // ========== Run when component mounted ==========
     useEffect(() => {
-        // Chuyển định dạng ngày thành 'YYYY_MM_DD'
         const year = dateData.getFullYear();
         const month = (dateData.getMonth() + 1).toString().padStart(2, '0'); // Thêm số 0 đằng trước
         const day = dateData.getDate().toString().padStart(2, '0'); // Thêm số 0 đằng trước
         const formattedDate = `${year}_${month}_${day}`
 
         const user = auth.currentUser;
-        if (!user) { return; } // Xử lý khi người dùng chưa đăng nhập
+        if (!user) { return; }
 
         const espId = user.displayName;
 

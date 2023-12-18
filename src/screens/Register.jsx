@@ -2,7 +2,7 @@
 import registerillustration from '../assets/illustration/register.png'
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
-import { ref, set } from "firebase/database";
+import { ref, set, get, child } from "firebase/database";
 import { auth, db } from "../functions/firebase"
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, onAuthStateChanged, updateEmail } from "firebase/auth"
 
@@ -14,8 +14,11 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [user, setUser] = useState(null);
+
     const [passwordError, setPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
+    const [espIdError, setEspIdError] = useState("");
+    const [emailError, setEmailError] = useState("");
 
     // ========== Run when component mounted ==========
     useEffect(() => {
@@ -36,6 +39,8 @@ const Register = () => {
 
         setPasswordError("");
         setConfirmPasswordError("");
+        setEspIdError("");
+        setEmailError("");
 
         if (password.length < 6) {
             setPasswordError("Mật khẩu phải có ít nhất 6 ký tự.");
@@ -48,12 +53,16 @@ const Register = () => {
         }
 
         try {
+            // Kiểm tra xem ESP ID đã tồn tại chưa
+            const espIdExists = await checkEspIdExists(espId);
+            if (espIdExists) {
+                setEspIdError("Mã máy ESP đã được sử dụng. Vui lòng chọn mã khác.");
+                return;
+            }
+
             // Create user
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-
-            // Send email verification
-            // await sendEmailVerification(user);
 
             // Update user profile
             await updateProfile(user, {
@@ -88,6 +97,21 @@ const Register = () => {
             navigate('/home'); // Redirect to home page
         } catch (error) {
             console.error('Lỗi trong quá trình đăng ký:', error.message);
+            if (error.code === "auth/email-already-in-use") {
+                setEmailError("Email này đã được đăng ký. Vui lòng chọn email khác.");
+            }
+        }
+    };
+
+    // Hàm kiểm tra xem mã máy ESP đã tồn tại chưa
+    const checkEspIdExists = async (espId) => {
+        try {
+            const espIdRef = ref(db, espId);
+            const espIdSnapshot = await get(child(espIdRef, 'esp_id'));
+            return espIdSnapshot.exists();
+        } catch (error) {
+            console.error('Lỗi trong quá trình kiểm tra ESP ID:', error.message);
+            return false;
         }
     };
 
@@ -118,6 +142,7 @@ const Register = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
+                        {emailError && <p className="text-red-500 -mt-2">{emailError}</p>}
 
                         <label htmlFor="esp" className="form-label">Mã máy ESP</label>
                         <input
@@ -130,6 +155,7 @@ const Register = () => {
                             value={espId}
                             onChange={(e) => setEspId(e.target.value)}
                         />
+                        {espIdError && <p className="text-red-500 -mt-2">{espIdError}</p>}
 
                         <label htmlFor="password" className="form-label">Mật khẩu</label>
                         <input
@@ -142,7 +168,7 @@ const Register = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
-                        {passwordError && <p className="text-red-500">{passwordError}</p>}
+                        {passwordError && <p className="text-red-500 -mt-2">{passwordError}</p>}
 
                         <label htmlFor="confirmPassword" className="form-label">Xác nhận mật khẩu</label>
                         <input
@@ -155,7 +181,7 @@ const Register = () => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
-                        {confirmPasswordError && <p className="text-red-500">{confirmPasswordError}</p>}
+                        {confirmPasswordError && <p className="text-red-500 -mt-2">{confirmPasswordError}</p>}
 
                         <button type="submit" className="custom-primary-btn w-full mt-4">
                             Đăng ký
