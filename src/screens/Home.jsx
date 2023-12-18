@@ -79,7 +79,7 @@ const Home = () => {
                         <option value="2">Sound 3</option>
                     </select>
 
-                    <label htmlFor="weight" className="form-label">Khối lượng:</label>
+                    <label htmlFor="weight" className="form-label">Khối lượng (gram):</label>
                     <input
                         type="number"
                         id="weight"
