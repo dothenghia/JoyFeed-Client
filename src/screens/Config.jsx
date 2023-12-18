@@ -30,6 +30,7 @@ const Config = () => {
         set(ref(db, `${espId}/feed_gram`), feed_gramData);
         set(ref(db, `${espId}/feed_time`), feed_timeData);
         set(ref(db, `${espId}/n_feed`), n_feedData);
+        set(ref(db, `${espId}/sound`), soundData);
 
         console.log("Đã lưu thông tin thành công!");
     }

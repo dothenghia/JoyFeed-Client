@@ -44,8 +44,8 @@ const Home = () => {
     }, []);
 
     // ========== Handle functions ==========
-    const updateValues = (event) => {
-        event.preventDefault();
+    const updateValues = (e) => {
+        e.preventDefault();
         const user = auth.currentUser;
         const espId = user.displayName; // Lấy mã ESP
 
@@ -53,7 +53,7 @@ const Home = () => {
             set(ref(db, `${espId}/weight`), parseFloat(weightData));
         }
         if (sound != '') {
-            set(ref(db, `${espId}/sound`), parseFloat(soundData));
+            set(ref(db, `${espId}/sound`), soundData);
         }
         set(ref(db, `${espId}/request`), 'Feed');
     }
@@ -71,7 +71,7 @@ const Home = () => {
 
                 <div className="divider"></div>
 
-                <form className="mt-6 mb-12" onSubmit={updateValues}>
+                <form className="mt-6 mb-12" onSubmit={(e) => updateValues(e)}>
                     <label htmlFor="sound" className="form-label">Âm thanh:</label>
                     <select id="sound" name="sound" className="form-input" onChange={(e) => setSoundData(e.target.value)} value={soundData}>
                         <option value="0">Sound 1</option>

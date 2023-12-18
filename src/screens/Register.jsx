@@ -72,7 +72,7 @@ const Register = () => {
                 remaining_food: 0, // Lượng Thức ăn còn lại
                 request: "Default", // "Default" -> Bình thường | "Feed" -> Cho ăn ngay lập tức
                 weight: 0, // Khẩu phần cho ăn lập tức
-                sound: 0 // Âm thanh cho ăn lập tức
+                sound: "0" // Âm thanh cho ăn lập tức
             }
 
             // Update realtime database
