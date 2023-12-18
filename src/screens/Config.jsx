@@ -103,9 +103,17 @@ const Config = () => {
 
             {
                 n_feedData === 0 ?
-                    (<div className="text-center text-xl font-semibold text-title">
-                        Bạn chưa cài đặt số bữa ăn
-                    </div>)
+                    (
+                        <>
+                            <div className="text-center text-xl font-semibold text-title">
+                                Bạn chưa cài đặt số bữa ăn
+
+                            </div>
+                            <div className="flex justify-center pt-8">
+                                <button onClick={(e) => handleUpdate(e)} className="custom-primary-btn">Tắt tính năng ăn tự động</button>
+                            </div>
+                        </>
+                    )
                     :
                     (
                         <form onSubmit={(e) => handleUpdate(e)}>

@@ -44,7 +44,8 @@ const Home = () => {
     }, []);
 
     // ========== Handle functions ==========
-    const updateValues = () => {
+    const updateValues = (event) => {
+        event.preventDefault();
         const user = auth.currentUser;
         const espId = user.displayName; // Lấy mã ESP
 
@@ -90,7 +91,7 @@ const Home = () => {
                     />
 
                     <button
-                        onClick={updateValues}
+                        type="submit"
                         className={`custom-primary-btn w-full ${requestData === 'Feed' ? 'opacity-50 bg-slate-500 hover:bg-slate-500' : ''}`}
                         disabled={requestData == 'Feed'}
                     >Cho ăn ngay lập tức</button>
