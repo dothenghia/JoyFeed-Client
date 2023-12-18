@@ -1,4 +1,5 @@
 
+import recoveryillustration from '../assets/illustration/recovery.png'
 import { Link } from "react-router-dom"
 
 const Recovery = () => {
@@ -9,7 +10,7 @@ const Recovery = () => {
 
                 <h1 className="block text-2xl font-semibold mb-0 text-primary">Quên mật khẩu</h1>
 
-                <img src="/assets/illustration/recovery.png"
+                <img src={recoveryillustration}
                     alt="Login Illustration"
                     className="w-72 max-w-[80%] ratio-1x1 object-cover"
                 />

@@ -1,4 +1,5 @@
 
+import logojoyfeed from '../../assets/joyfeed.png'
 
 const Header = ({ open, setOpen }) => {
     // console.log('[Header] render')
@@ -19,7 +20,7 @@ const Header = ({ open, setOpen }) => {
             </button>
 
             <img
-                src="/assets/joyfeed.png"
+                src={logojoyfeed}
                 alt="logo"
                 className="h-8 absolute left-1/2 transform -translate-x-1/2"
             />
