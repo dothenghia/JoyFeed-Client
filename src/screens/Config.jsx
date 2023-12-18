@@ -9,6 +9,7 @@ const Config = () => {
     const [soundData, setSoundData] = useState("0")
     const [feed_gramData, setFeed_gramData] = useState([])
     const [feed_timeData, setFeed_timeData] = useState([])
+    const [turnOff, setTurnOff] = useState(true)
 
     // ========== Handle functions ==========
     function handleDecreaseMeal() {
@@ -42,7 +43,14 @@ const Config = () => {
 
         let n_feed = ref(db, `${espId}/n_feed`);
         onValue(n_feed, (snapshot) => {
-            setN_feedData(snapshot.val());
+            let data = snapshot.val() || 0;
+            if (data === 0) {
+                setTurnOff(true);
+            }
+            else {
+                setTurnOff(false);
+            }
+            setN_feedData(data);
             let newDataLength = snapshot.val();
             setFeed_gramData(prevData => prevData.slice(0, newDataLength));
             setFeed_timeData(prevData => prevData.slice(0, newDataLength));
@@ -105,15 +113,30 @@ const Config = () => {
             {
                 n_feedData === 0 ?
                     (
-                        <>
-                            <div className="text-center text-xl font-semibold text-title">
-                                Bạn chưa cài đặt số bữa ăn
+                        turnOff ?
+                            (
+                                <>
+                                    <div className="text-center text-xl font-semibold text-title">
+                                        Bạn chưa cài đặt số bữa ăn
 
-                            </div>
-                            <div className="flex justify-center pt-8">
-                                <button onClick={(e) => handleUpdate(e)} className="custom-primary-btn">Tắt tính năng ăn tự động</button>
-                            </div>
-                        </>
+                                    </div>
+                                    <div className="flex justify-center pt-8">
+                                        <button onClick={handleIncreaseMeal} className="custom-primary-btn">Bật tính năng ăn tự động</button>
+                                    </div>
+                                </>
+                            )
+                            :
+                            (
+                                <>
+                                    <div className="text-center text-xl font-semibold text-title">
+                                        Bạn muốn tắt tính năng ăn tự động?
+                                    </div>
+                                    <div className="flex justify-center pt-8">
+                                        <button onClick={(e) => handleUpdate(e)} className="custom-primary-btn">Tắt tính năng ăn tự động</button>
+                                    </div>
+                                </>
+                            )
+
                     )
                     :
                     (

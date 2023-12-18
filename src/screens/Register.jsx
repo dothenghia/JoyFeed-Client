@@ -92,9 +92,9 @@ const Register = () => {
     };
 
     return (
-        <div id="login" className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary flex justify-center items-center">
+        <div className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary flex justify-center items-center">
 
-            <div className="w-[90%] h-fit md:h-[90%] md:min-h-[90vh] flex justify-between items-center bg-white rounded-2xl overflow-hidden shadow-lg flex-col md:flex-row">
+            <div className="w-[90%] h-fit md:py-8 flex justify-between items-center bg-white rounded-2xl overflow-hidden shadow-lg flex-col md:flex-row">
 
                 <div className="hidden md:flex w-1/2 py-8 justify-center items-center self-center border-r-2">
                     <img src={registerillustration}

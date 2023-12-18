@@ -42,9 +42,9 @@ const Login = () => {
 
 
     return (
-        <div id="login" className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary flex justify-center items-center">
+        <div className="screen-container-0py bg-gradient-to-br from-[#22E1FF] via-[#1D8FE1] to-primary flex justify-center items-center">
 
-            <div className="w-[90%] h-[90%] min-h-[90vh] flex justify-between items-center bg-white rounded-2xl overflow-hidden shadow-lg flex-col md:flex-row">
+            <div className="w-[90%] py-8 md:py-16 flex justify-between items-center bg-white rounded-2xl overflow-hidden shadow-lg flex-col md:flex-row">
 
                 <div className="w-full md:w-1/2 px-6 md:px-8 lg:px-16 flex flex-col items-center">
                     <h1 className="hidden md:block text-2xl md:text-4xl font-bold mb-5 text-primary">JoyFeed</h1>
