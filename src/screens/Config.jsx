@@ -21,7 +21,7 @@ const Config = () => {
         if (n_feedData === 5) return
         setN_feedData(n_feedData + 1)
     }
-    
+
     function handleUpdate(e) {
         e.preventDefault();
         const user = auth.currentUser;
@@ -55,7 +55,7 @@ const Config = () => {
             let data = snapshot.val() || [];
             setFeed_gramData(data);
         });
-        
+
         let feed_time = ref(db, `${espId}/feed_time`);
         onValue(feed_time, (snapshot) => {
             let data = snapshot.val() || [];
@@ -94,9 +94,9 @@ const Config = () => {
                 <div className="w-fit">
                     <label htmlFor="soundData" className="form-label">Âm thanh</label>
                     <select id="soundData" className="form-input m-0" onChange={(e) => setSoundData(e.target.value)} value={soundData}>
-                        <option value="0">Tiếng gọi hoang dã</option>
-                        <option value="1">Sao em lại không nói</option>
-                        <option value="2">Tìm em trong bóng damn</option>
+                        <option value="0">Sound 1</option>
+                        <option value="1">Sound 2</option>
+                        <option value="2">Sound 3</option>
                     </select>
                 </div>
             </div>

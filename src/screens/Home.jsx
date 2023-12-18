@@ -73,9 +73,9 @@ const Home = () => {
                 <form className="mt-6 mb-12" onSubmit={updateValues}>
                     <label htmlFor="sound" className="form-label">Âm thanh:</label>
                     <select id="sound" name="sound" className="form-input" onChange={(e) => setSoundData(e.target.value)} value={soundData}>
-                        <option value="0">Tiếng gọi hoang dã</option>
-                        <option value="1">Sao em lại không nói</option>
-                        <option value="2">Tìm em trong bóng đêm</option>
+                        <option value="0">Sound 1</option>
+                        <option value="1">Sound 2</option>
+                        <option value="2">Sound 3</option>
                     </select>
 
                     <label htmlFor="weight" className="form-label">Khối lượng:</label>

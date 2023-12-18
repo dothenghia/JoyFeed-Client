@@ -96,7 +96,7 @@ const Register = () => {
             <div className="w-[90%] h-fit md:h-[90%] md:min-h-[90vh] flex justify-between items-center bg-white rounded-2xl overflow-hidden shadow-lg flex-col md:flex-row">
 
                 <div className="hidden md:flex w-1/2 py-8 justify-center items-center self-center border-r-2">
-                    <img src="../assets/illustration/register.png"
+                    <img src="/assets/illustration/register.png"
                         alt="Register Illustration"
                         className="w-3/4 ratio-1x1 object-cover"
                     />
