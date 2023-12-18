@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { auth } from "../functions/firebase";
-import { updatePassword } from 'firebase/auth';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 
 const Setting = () => {
     const [emailData, setEmailData] = useState("");
     const [esp_idData, setEsp_idData] = useState("");
+
+    const [currentPassword, setCurrentPassword] = useState("");
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
     const [passwordError, setPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
     const [successMessage, setSuccessMessage] = useState(""); // Thêm state cho thông báo thành công
@@ -26,28 +29,40 @@ const Setting = () => {
         try {
             setPasswordError("");
             setConfirmPasswordError("");
-            setSuccessMessage(""); // Reset thông báo thành công
+            setSuccessMessage("");
+
+            if (currentPassword.length === 0) {
+                setPasswordError("Vui lòng nhập mật khẩu hiện tại.");
+                return;
+            }
+
+            // Thêm xác thực mật khẩu hiện tại
+            const user = auth.currentUser;
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            await reauthenticateWithCredential(user, credential);
 
             if (password.length < 6) {
-                setPasswordError("Mật khẩu phải có ít nhất 6 ký tự.");
+                setPasswordError("Mật khẩu mới phải có ít nhất 6 ký tự.");
                 return;
             }
 
             if (password !== confirmPassword) {
-                setConfirmPasswordError("Xác nhận mật khẩu không khớp.");
+                setConfirmPasswordError("Xác nhận mật khẩu mới không khớp.");
                 return;
             }
 
-            const user = auth.currentUser;
             await updatePassword(user, password);
 
-            // Nếu muốn thông báo cập nhật mật khẩu thành công, bạn có thể thêm state và hiển thị một thông báo.
             setSuccessMessage("Cập nhật mật khẩu thành công!");
 
         } catch (error) {
             console.error("Lỗi cập nhật mật khẩu:", error.message);
+            if (error.code === "auth/invalid-credential") {
+                setPasswordError("Mật khẩu hiện tại không đúng.");
+            }
         }
     };
+
 
     return (
         <div className="max-w-3xl mx-auto px-5 sm:px-10 h-full pt-6">
@@ -83,6 +98,20 @@ const Setting = () => {
             <h1 className="text-center text-xl font-semibold text-title">Đổi mật khẩu</h1>
 
             <form onSubmit={handleUpdatePassword}>
+
+                <label htmlFor="currentPassword" className="form-label">Mật khẩu hiện tại</label>
+                <input
+                    type="password"
+                    id="currentPassword"
+                    name="currentPassword"
+                    placeholder="Nhập mật khẩu hiện tại"
+                    required
+                    className="form-input"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                />
+
+
                 <label htmlFor="password" className="form-label">Mật khẩu mới</label>
                 <input
                     type="password"

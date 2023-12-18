@@ -48,7 +48,7 @@ const Login = () => {
                 <div className="w-full md:w-1/2 px-6 md:px-8 lg:px-16 flex flex-col items-center">
                     <h1 className="hidden md:block text-2xl md:text-4xl font-bold mb-5 text-primary">JoyFeed</h1>
 
-                    <img src="/src/assets/illustration/logo.jpg"
+                    <img src="../assets/illustration/logo.jpg"
                         alt="Login Illustration"
                         className="md:hidden w-72 max-w-[80%] ratio-1x1 object-cover"
                     />
@@ -101,7 +101,7 @@ const Login = () => {
                 </div>
 
                 <div className="hidden md:flex w-1/2 py-8 justify-center items-center self-center border-l-2">
-                    <img src="/src/assets/illustration/logo.jpg"
+                    <img src="../assets/illustration/logo.jpg"
                         alt="Login Illustration"
                         className="w-3/4 ratio-1x1 object-cover"
                     />

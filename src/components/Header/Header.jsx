@@ -19,7 +19,7 @@ const Header = ({ open, setOpen }) => {
             </button>
 
             <img
-                src="/src/assets/joyfeed.png"
+                src="../../assets/joyfeed.png"
                 alt="logo"
                 className="h-8 absolute left-1/2 transform -translate-x-1/2"
             />
