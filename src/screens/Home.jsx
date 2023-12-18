@@ -88,6 +88,8 @@ const Home = () => {
                         className="form-input"
                         value={weightData}
                         onChange={(e) => setWeightData(e.target.value)}
+                        min={0}
+                        max={100}
                     />
 
                     <button

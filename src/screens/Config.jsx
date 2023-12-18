@@ -168,6 +168,8 @@ const Config = () => {
                                                     onChange={(e) => setFeed_gramData([...feed_gramData.slice(0, index), e.target.value, ...feed_gramData.slice(index + 1)])}
                                                     value={feed_gramData[index] || ''}
                                                     required
+                                                    min={0}
+                                                    max={100}
                                                 />
                                                 <span className="text-base font-medium text-text ml-2">gram</span>
                                             </div>
