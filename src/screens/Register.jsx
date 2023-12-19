@@ -72,8 +72,8 @@ const Register = () => {
 
             // Create realtime database for user
             const newRealtimeUser = {
-                uid: user.uid,
-                email: email,
+                // uid: user.uid,
+                // email: email,
                 esp_id: espId,
                 feed_gram: [], // Hẹn lượng thức ăn
                 feed_time: [], // Hẹn giờ cho ăn
