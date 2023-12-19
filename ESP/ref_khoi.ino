@@ -13,6 +13,9 @@
 //Queue
 #include "Queue.h"
 
+// buzzer song
+#include "buzzer_song.h"
+
 #define FIREBASE_HOST "https://joyfeed-6f7a8-default-rtdb.asia-southeast1.firebasedatabase.app/"
 #define FIREBASE_AUTH "3INg6iazTAVbOqB9NUC8ke9HY1C4yGAnBJIm5gV9"
 #define WIFI_SSID "top 1 si tinh iu em ko loi thoat"
@@ -51,7 +54,7 @@ const char index_html[] PROGMEM = R"rawliteral(
 const int LOADCELL_DOUT_PIN = 12;
 const int LOADCELL_SCK_PIN = 13;
 HX711 scale;
-float calibration_factor = -9050;
+float calibration_factor = -1677;
 
 // ultrasonic sensor
 const int trig_pin = 14;
@@ -68,7 +71,7 @@ const int buzzer = 5;
 // time limit for notification
 float time_no_food = -1000*3600*12; //12 hours -> milliseconds
 float H12 = 1000*3600*12;
-float limit_distance = 7;
+float limit_distance = 16.5;
 
 float eat_amount = 0;
 float eat_amount_d = 0;
@@ -136,39 +139,140 @@ float getWeight()
 void runMotor(float time)
 {
   long long curTime = millis();
+  while(millis()-curTime < 300)
+  {
+    analogWrite(ena,150);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+  }
+  delay(50);
   while (millis() - curTime < time * 1000)
   {
     Serial.println("Start motor");
-    digitalWrite(ena, HIGH);
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
+    analogWrite(ena,70);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
   }
-  digitalWrite(ena, LOW);
+  analogWrite(ena, 0);
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
 }
 
 void feed(float gram)
 {
+  analogWrite(ena,170);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+  delay(350);
   float w = getWeight();
   while(w < gram)
   {
     Serial.println("Start motor");
-    digitalWrite(ena, HIGH);
-    digitalWrite(in1, HIGH);
-    digitalWrite(in2, LOW);
+    analogWrite(ena,100);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
     w = getWeight();
     Serial.println(w);
   }
-  digitalWrite(ena, LOW);
+  analogWrite(ena, 0);
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
   
 }
 
-void alert()
+void alert(int index)
 {
-  tone(buzzer, 263, 1000);
+  if (index == 0)
+  {
+    int notes[] = {
+      NOTE_E4, NOTE_G4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_C5, 0, NOTE_C5, NOTE_D5, NOTE_B4, NOTE_B4, 0, NOTE_A4, NOTE_G4, NOTE_A4, 0,
+      NOTE_E4, NOTE_G4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_B4, NOTE_C5, NOTE_C5, 0, NOTE_C5, NOTE_D5, NOTE_B4, NOTE_B4, 0, NOTE_A4, NOTE_G4, NOTE_A4, 0, 
+      NOTE_E4, NOTE_G4, NOTE_A4, NOTE_A4, 0, NOTE_A4, NOTE_C5, NOTE_D5, NOTE_D5, 0, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_F5, 0, NOTE_E5, NOTE_D5, NOTE_E5, NOTE_A4, 0,
+      NOTE_A4, NOTE_B4, NOTE_C5, NOTE_C5, 0, NOTE_D5, NOTE_E5, NOTE_A4, 0, NOTE_A4, NOTE_C5, NOTE_B4, NOTE_B4, 0, NOTE_C5, NOTE_A4, NOTE_B4, 0, NOTE_A4, NOTE_A4
+    };
+    int durations[] = {
+      125, 125, 250, 125, 125, 125, 125, 250, 125, 125, 125, 125, 250, 125, 125, 125, 125, 375, 125, 125, 125, 250, 125, 125,
+      125, 125, 250, 125, 125, 125, 125, 250, 125, 125, 125, 125, 375, 125, 125, 125, 250, 125, 125, 125, 125, 250, 125, 125,
+      125, 125, 250, 125, 125, 125, 125, 125, 250, 125, 125, 125, 250, 125, 125, 250, 125, 250, 125, 125, 125, 250, 125, 125,
+      125, 125, 375, 375, 250, 125
+    };
+    const int totalNotes = sizeof(notes) / sizeof(int);
+    const float songSpeed = 1.0;
+    // Loop through each note
+    for (int i = 0; i < totalNotes; i++)
+    {
+      const int currentNote = notes[i];
+      float wait = durations[i] / songSpeed;
+      if (currentNote != 0)
+      {
+        tone(buzzer, notes[i], wait); 
+      }
+      else
+      {
+        noTone(buzzer);
+      }
+      delay(wait);
+    }
+  }
+  else if (index == 1)
+  {
+    int notes[] = {
+      NOTE_E7, NOTE_E7, 0, NOTE_E7, 0, NOTE_C7, NOTE_E7, 0, NOTE_G7, 0, 0,  0, NOTE_G6, 0, 0, 0, NOTE_C7, 0, 0, NOTE_G6,
+      0, 0, NOTE_E6, 0, 0, NOTE_A6, 0, NOTE_B6, 0, NOTE_AS6, NOTE_A6, 0, NOTE_G6, NOTE_E7, NOTE_G7, NOTE_A7, 0, NOTE_F7, NOTE_G7,
+      0, NOTE_E7, 0, NOTE_C7, NOTE_D7, NOTE_B6, 0, 0, NOTE_C7, 0, 0, NOTE_G6, 0, 0, NOTE_E6, 0, 0, NOTE_A6, 0, NOTE_B6,
+      0, NOTE_AS6, NOTE_A6, 0, NOTE_G6, NOTE_E7, NOTE_G7, NOTE_A7, 0, NOTE_F7, NOTE_G7, 0, NOTE_E7, 0, NOTE_C7,
+      NOTE_D7, NOTE_B6, 0, 0
+    };
+    int durations[] = {
+      12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+      12, 12, 12, 12, 9, 9, 9, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+      12, 12, 12, 12, 12, 12, 12, 12, 9, 9, 9, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    };
+    const int totalNotes = sizeof(notes) / sizeof(int);
+    const float songSpeed = 1.0;
+    // Loop through each note
+    for (int i = 0; i < totalNotes; i++)
+    {
+      float wait = 1000 / durations[i] ;
+      tone(buzzer, notes[i], wait); 
+      delay(wait * 1.30);
+      noTone(buzzer);
+    }
+  }
+  else if (index == 2)
+  {
+    int notes[] = {
+      NOTE_B4, NOTE_B5, NOTE_FS5, NOTE_DS5,
+      NOTE_B5, NOTE_FS5, NOTE_DS5, NOTE_C5,
+      NOTE_C6, NOTE_G6, NOTE_E6, NOTE_C6, NOTE_G6, NOTE_E6,
+      
+      NOTE_B4, NOTE_B5, NOTE_FS5, NOTE_DS5, NOTE_B5,
+      NOTE_FS5, NOTE_DS5, NOTE_DS5, NOTE_E5, NOTE_F5,
+      NOTE_F5, NOTE_FS5, NOTE_G5, NOTE_G5, NOTE_GS5, NOTE_A5, NOTE_B5
+    };
+
+    int durations[] = {
+      16, 16, 16, 16,
+      32, 16, 8, 16,
+      16, 16, 16, 32, 16, 8,
+      
+      16, 16, 16, 16, 32,
+      16, 8, 32, 32, 32,
+      32, 32, 32, 32, 32, 16, 8
+    };
+
+    const int totalNotes = sizeof(notes) / sizeof(int);
+    const float songSpeed = 1.0;
+    // Loop through each note
+    for (int i = 0; i < totalNotes; i++)
+    {
+      float wait = 1000 / durations[i] ;
+      tone(buzzer, notes[i], wait); 
+      delay(wait * 1.30);
+      noTone(buzzer);
+    }
+  }
+  // tone(buzzer, 263, 1000);
 }
 
 String getWorldTime()
@@ -318,7 +422,7 @@ void setup() {
   connect2wifi();
   // Setup the Loadcell&HX711
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
-  //scale.set_scale();
+  scale.set_scale(calibration_factor);
   //scale.tare(); //Reset the scale to 0
   //long zero_factor = scale.read_average(); //Get a baseline reading
 
@@ -347,8 +451,8 @@ String numberFormat(int x)
 void loop() {
   timeClient.update();
   unsigned long now = timeClient.getEpochTime();
-  struct tm *ptm = gmtime ((time_t *)&now); 
-  
+  float r = getWeight();
+  Serial.println(r);
   //most recent feeding if exist 
   unsigned long most_recent_time = 2e9;
   float most_recent_gram = 0;
@@ -357,6 +461,7 @@ void loop() {
     most_recent_time = eat_time_q.front();
     most_recent_gram = eat_gram_q.front();
   }
+
 
   //get data from realtime firebase
   String request = "None";
@@ -370,11 +475,12 @@ void loop() {
   Serial.println(request);
   Serial.println(String(doc["feed_time"]));
   Serial.println(String(doc["feed_gram"]));
-  
+  int si = doc["sound"];
   //Feed immediately
   if(doc["request"] == "Feed")
   {
     eat_amount_d = doc["weight"];
+    alert(si);
     feed(eat_amount_d);
 
     //push to queue 
@@ -391,12 +497,13 @@ void loop() {
   int n_feed = doc["n_feed"];
   for (int i=0;i<n_feed;++i)
   {
-    Serial.println(stringToHour(doc["feed_time"][i]) * 3600 + stringToMin(doc["feed_time"][i]) * 60);
+    
     if(abs(time - stringToHour(doc["feed_time"][i]) *3600 - stringToMin(doc["feed_time"][i]) * 60) < 60)
     {
       eat_amount = doc["feed_gram"][i];
+      alert(si);
       feed(eat_amount);
-     
+      //runMotor(2);
       //push to queue
       eat_time_q.push(now);
       eat_gram_q.push(eat_amount);
@@ -407,8 +514,8 @@ void loop() {
   
   //Detect out of food
   float distance = getDistance();
-  Serial.println(distance);
-  if(distance > limit_distance && now - time_no_food > H12)
+  Serial.println("DIS"+String(distance));
+  if(distance >= 0.9*limit_distance && now - time_no_food > H12)
   {
       sendOutOfFood();
       time_no_food = now;
@@ -418,25 +525,29 @@ void loop() {
   float remain_percent = 100.0;
   if(distance < 0)
     remain_percent = 0;
-  else if(distance > 15)
-    remain_percent = 100.0;
   else 
-    remain_percent = min(distance/limit_distance*100,float(100.0));
+    remain_percent = min(100 - min(distance+0.0,limit_distance-0.5)/limit_distance*100,100.0);
   firebase.setFloat(path+"remaining_food",remain_percent);
   
   //After eating -> update history
-  if(now - most_recent_time > 30*60)
+  if(now - most_recent_time > 120 && most_recent_time < 2e9)
   {
+    Serial.println(now);
+    Serial.println(most_recent_time);
+    Serial.println("");
     float w = getWeight();
-    float ate = (most_recent_gram - w) > 0 ? most_recent_gram - w : most_recent_gram;
+    float ate = (most_recent_gram - w) > 0 ? most_recent_gram - w : 0;
 
     //Detect no eat
-    if(w > 0.8 * most_recent_gram)
+    if(ate < 0.2 * most_recent_gram)
       sendNoEat();
-    
+    Serial.println("kkkkkk");
     //Update database
-    struct tm *ptm2 = gmtime ((time_t *)&most_recent_time); 
-    String save_path = "history/" + path +  String(ptm->tm_year+1900) + "_" + numberFormat(ptm->tm_mon+1) + "_" + numberFormat(ptm->tm_mday) + "/" + numberFormat(ptm2->tm_hour) + ":" + numberFormat(ptm->tm_min) + "/";
+    time_t x = (time_t) most_recent_time;
+    struct tm *ptm2 = gmtime ((time_t *)&x); 
+    String save_path = "history/" + path +  String((ptm2->tm_year)+1900) + "_" + numberFormat(ptm2->tm_mon+1) + "_" + numberFormat(ptm2->tm_mday) + "/" + numberFormat(ptm2->tm_hour) + ":" + numberFormat(ptm2->tm_min) + "/";
+    Serial.println(save_path);
+    Serial.println(ptm2->tm_year);
     firebase.setFloat(save_path + "eat", ate);
     firebase.setFloat(save_path + "feed", most_recent_gram);
 
@@ -444,6 +555,7 @@ void loop() {
     eat_time_q.pop();
     eat_gram_q.pop();
   }
-  
-  delay(3000);
+  Serial.println("Hello");
+  // alert(2);
+  delay(2000);
 }
