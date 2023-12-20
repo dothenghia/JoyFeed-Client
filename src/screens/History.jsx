@@ -30,7 +30,7 @@ const History = () => {
             const data = snapshot.val() || [];
             const dataArray = Object.entries(data).map(([time, values]) => ({ // Chuyển object thành array
                 time,
-                boan: (values.eat / values.feed <= 0.8), // Nếu ăn ít hơn 80% thì coi như bỏ ăn
+                boan: (values.eat / values.feed <= 0.2), // Nếu ăn ít hơn 20% thì coi như bỏ ăn
                 ...values
             }));
             setHistoryData(dataArray);
