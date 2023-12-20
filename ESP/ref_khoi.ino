@@ -1,7 +1,8 @@
 #include "HX711.h"
 #include <ESP8266WiFi.h>
 #include <ESP8266Firebase.h>
-#include <ESPAsyncWebSrv.h>
+
+#include <WiFiManager.h>     
 
 // 2 libraries for getting World Time
 #include <NTPClient.h>
@@ -31,11 +32,17 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
+//WiFiManager 
+WiFiManager wifiManager;
+
+
 // Firebase initialization
 Firebase firebase(FIREBASE_HOST);
 String path = "1234/";
 String ssid = "";
 String password = "";
+
+
 
 // const char index_html[] PROGMEM = R"rawliteral(
 // <!DOCTYPE HTML><html><head>
@@ -81,8 +88,7 @@ float eat_amount_d = 0;
 Queue <unsigned long>	eat_time_q;	
 Queue	<float> eat_gram_q;
 
-// ESP8266 Access Point
-AsyncWebServer server(80);
+
 
 void connect2wifi()
 {
@@ -405,9 +411,17 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println("Connecting to WiFi");
-  WiFi.mode(WIFI_AP_STA);
+
+  // WiFi.mode(WIFI_AP_STA);
+  // connect2wifi();
+
+  
+  WiFi.mode(WIFI_STA);
+  wifiManager.setConnectTimeout(30);
+  wifiManager.setTimeout(300);
+  wifiManager.autoConnect("JoyFeed", "123123");
   // setupAccessPoint();
-  connect2wifi();
+  
   // Setup the Loadcell&HX711
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   scale.set_scale(calibration_factor);
@@ -427,7 +441,7 @@ void setup() {
   pinMode(echo_pin, INPUT);
 
   //Chip ID
-  //ESP.getChipId();
+  //path = String(ESP.getChipId())+"/";
   timeClient.begin();
 }
 
@@ -512,7 +526,7 @@ void loop() {
   //Set remaining food
   float remain_percent = 100.0;
   if(distance < 0)
-    remain_percent = 0;
+    remain_percent = 100;
   else 
     remain_percent = min(100 - min(distance+0.0,limit_distance-0.5)/limit_distance*100,100.0);
   firebase.setFloat(path+"remaining_food",remain_percent);
